@@ -7,8 +7,10 @@ public class CameraController : MonoBehaviour
     // Offset camera to player
     private Vector3 offset;
 
+    // References
     // Player the camera belongs to
     public GameObject player;
+
     // Smooth speed
     public float smooth = 6.0f;
 
