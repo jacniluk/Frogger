@@ -9,7 +9,6 @@ public class PlayerController : MonoBehaviour
     // Rigidbody
     Rigidbody rb;
 
-    // Player data
     // Max num of lives of player
     const int maxLives = 3;
     // Current num of lives of player
@@ -20,6 +19,10 @@ public class PlayerController : MonoBehaviour
     const int maxBases = 3;
     // Current num of bases which player achieved
     int bases;
+    // Movement step
+    Vector3 move;
+    // Is player swimming
+    public bool isSwimming;
 
     // Max time of Level 1
     const float maxTimeLevel1 = 45.0f;
@@ -50,6 +53,9 @@ public class PlayerController : MonoBehaviour
         textLives.text = "Lives: " + lives.ToString();
         textScore.text = "Score: 0";
         textMessage.enabled = false;
+
+        // Respawn player
+        Respawn();
     }
 
     // Called once per frame
@@ -59,13 +65,8 @@ public class PlayerController : MonoBehaviour
         currentTime -= Time.deltaTime;
         System.TimeSpan time = System.TimeSpan.FromSeconds(currentTime);
         textCurrentTime.text = time.ToString("m':'ss");
-    }
 
-    // Called every fixed frame-rate frame
-    void FixedUpdate()
-    {
         // Update position
-        Vector3 move = new Vector3(0.0f, 0.0f, 0.0f);
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             move.z = 1.0f;
@@ -74,7 +75,7 @@ public class PlayerController : MonoBehaviour
         {
             move.z = -1.0f;
         }
-        else if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
             move.x = -1.0f;
         }
@@ -82,11 +83,21 @@ public class PlayerController : MonoBehaviour
         {
             move.x = 1.0f;
         }
+        if (isSwimming && move != Vector3.zero)
+        {
+            isSwimming = false;
+        }
+    }
+
+    // Called every fixed frame-rate frame
+    void FixedUpdate()
+    {
         rb.MovePosition(transform.position + move);
+        move = Vector3.zero;
     }
 
     // Called when the Collider other enters the trigger
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Target Base"))
         {
@@ -104,24 +115,49 @@ public class PlayerController : MonoBehaviour
                 textMessage.text = "Level Complete!";
                 textMessage.color = new Color(22.0f / 255.0f, 124.0f / 255.0f, 241.0f / 255.0f);
                 textMessage.enabled = true;
+                Invoke("DisableTextMessage", 2.0f);
             }
         }
         else if (other.gameObject.CompareTag("Car"))
         {
             // Hit by car
-            lives--;
-            if (lives > 0)
-            {
-                textMessage.text = "You are dead!";
-            }
-            else
-            {
-                textMessage.text = "Game Over!";
-            }
-            textLives.text = "Lives: " + lives.ToString();
-            textMessage.color = new Color(207.0f / 255.0f, 17.0f / 255.0f, 17.0f / 255.0f);
-            textMessage.enabled = true;
-            transform.position = Spawn.transform.position;
+            Dead();
         }
+    }
+
+    // Respawn player and reset data
+    void Respawn()
+    {
+        transform.rotation = Spawn.transform.rotation;
+        transform.position = Spawn.transform.position;
+        move = Vector3.zero;
+        isSwimming = false;
+    }
+
+    // Disable message after some time
+    void DisableTextMessage()
+    {
+        textMessage.enabled = false;
+    }
+
+    // Player is dead
+    public void Dead()
+    {
+        lives--;
+        if (lives > 0)
+        {
+            textMessage.text = "You are dead!";
+        }
+        else
+        {
+            textMessage.text = "Game Over!";
+        }
+        textLives.text = "Lives: " + lives.ToString();
+        textMessage.color = new Color(207.0f / 255.0f, 17.0f / 255.0f, 17.0f / 255.0f);
+        textMessage.enabled = true;
+        Invoke("DisableTextMessage", 2.0f);
+
+        // Respawn player
+        Respawn();
     }
 }

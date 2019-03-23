@@ -8,9 +8,10 @@ public class Spawn : MonoBehaviour
     // Car
     public GameObject spawnObject;
 
-    // Time to next respawn
-    public float respawnIntervalMin = 1.0f;
-    public float respawnIntervalMax = 2.0f;
+    // Min time to next respawn
+    public float respawnIntervalMin = 2.0f;
+    // Max time to next respawn
+    public float respawnIntervalMax = 3.0f;
 
     // Called before the first frame update
     void Start()

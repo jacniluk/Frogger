@@ -7,13 +7,14 @@ public class CarController : MonoBehaviour
     // Speed of car
     float speed;
     // Min speed of car
-    float minSpeed = 15.0f;
+    float minSpeed = 5.0f; // 15
     // Max speed of car
-    float maxSpeed = 20.0f;
+    float maxSpeed = 6.0f; // 20
 
     // Called before the first frame update
     void Start()
     {
+        // Initialization of data
         speed = Random.Range(minSpeed, maxSpeed);
     }
 
