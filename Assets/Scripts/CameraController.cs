@@ -13,6 +13,8 @@ public class CameraController : MonoBehaviour
 
     // Smooth speed
     public float smooth = 6.0f;
+    // Max up position of camera
+    public float maxUpPosition = 4.0f;
 
     // Called before the first frame update
     void Start()
@@ -31,6 +33,11 @@ public class CameraController : MonoBehaviour
     {
         // Move camera with smooth
         Vector3 destination = player.transform.position + offset;
-        transform.position = Vector3.Lerp(transform.position, destination, smooth * Time.deltaTime);
+        float newZ = Vector3.Lerp(transform.position, destination, smooth * Time.deltaTime).z;
+        if (newZ > maxUpPosition)
+        {
+            newZ = transform.position.z;
+        }
+        transform.position = new Vector3(transform.position.x, transform.position.y, newZ);
     }
 }

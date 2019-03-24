@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LeafController : MonoBehaviour
+public class FloatingObjectController : MonoBehaviour
 {
     // References
     // Player
@@ -11,13 +11,11 @@ public class LeafController : MonoBehaviour
     // Speed of leaf
     float speed;
     // Min speed of leaf
-    float minSpeed = 5.0f;
+    float minSpeed = 2.6f;
     // Max speed of leaf
-    float maxSpeed = 6.0f;
+    float maxSpeed = 2.7f;
     // Can leaf immerse
     bool canImmerse;
-    // Is leaf currently immersing
-    bool isImmersing;
 
     // Start is called before the first frame update
     void Start()
@@ -25,22 +23,17 @@ public class LeafController : MonoBehaviour
         // Initialization of data
         player = null;
         speed = Random.Range(minSpeed, maxSpeed);
-        canImmerse = Random.Range(0, 2) == 0 ? true : false;
-        isImmersing = false;
+        canImmerse = Random.Range(0, 6) == 0 ? true : false;
+        if (canImmerse)
+        {
+            Invoke("Immerce", Random.Range(3, 5));
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (canImmerse && !isImmersing)
-        {
-            if (Random.Range(0, 150) == 0)
-            {
-                isImmersing = true;
-                transform.position += new Vector3(0.0f, -0.21f, 0.0f);
-                Invoke("Resurface", 1.0f);
-            }
-        }
+        
     }
 
     // Called every fixed frame-rate frame
@@ -49,9 +42,9 @@ public class LeafController : MonoBehaviour
         transform.position += transform.forward * Time.deltaTime * speed;
         if (player)
         {
-            if (player.GetComponent<PlayerController>().isSwimming == true)
+            if (player.GetComponent<PlayerController>().isFloating == true)
             {
-                player.transform.position = transform.position;
+                player.gameObject.GetComponent<PlayerController>().MoveSwimming(transform.position);
             }
             else
             {
@@ -66,7 +59,7 @@ public class LeafController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             player = collision.gameObject;
-            player.GetComponent<PlayerController>().isSwimming = true;
+            player.GetComponent<PlayerController>().isFloating = true;
         }
     }
 
@@ -79,10 +72,17 @@ public class LeafController : MonoBehaviour
         }
     }
 
+    // Immerce into water
+    void Immerce()
+    {
+        transform.position += new Vector3(0.0f, -0.21f, 0.0f);
+        Invoke("Resurface", 1.0f);
+    }
+
     // Resurface out of water
     void Resurface()
     {
-        isImmersing = false;
         transform.position += new Vector3(0.0f, 0.21f, 0.0f);
+        Invoke("Immerce", Random.Range(3, 5));
     }
 }

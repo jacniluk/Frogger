@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8605390603191086623}
   m_Layer: 0
   m_Name: Leaf
-  m_TagString: Leaf
+  m_TagString: Floating Object
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

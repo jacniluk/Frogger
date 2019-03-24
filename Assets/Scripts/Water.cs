@@ -8,13 +8,13 @@ public class Water : MonoBehaviour
     // Player
     GameObject player;
 
-    // Start is called before the first frame update
+    // Called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+    // Called once per frame
     void Update()
     {
         
@@ -25,7 +25,7 @@ public class Water : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            collision.gameObject.GetComponent<PlayerController>().Dead();
+            collision.gameObject.GetComponent<PlayerController>().Dead("You drowned!");
         }
     }
 }

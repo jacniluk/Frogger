@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Target Base
   - Car
-  - Leaf
+  - Floating Object
   layers:
   - Default
   - TransparentFX

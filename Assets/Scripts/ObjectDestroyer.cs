@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ObjectDestroyer : MonoBehaviour
 {
-    // Start is called before the first frame update
+    // Called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+    // Called once per frame
     void Update()
     {
         
@@ -19,7 +19,7 @@ public class ObjectDestroyer : MonoBehaviour
     // Called when the Collider other enters the trigger
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Car") || other.gameObject.CompareTag("Leaf"))
+        if (other.gameObject.CompareTag("Car") || other.gameObject.CompareTag("Floating Object"))
         {
             Destroy(other.gameObject);
         }
