@@ -2,31 +2,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controller for car, update movement
 public class CarController : MonoBehaviour
 {
     // Speed of car
     float speed;
     // Min speed of car
-    float minSpeed = 5.0f; // 15
+    static float minSpeed;
     // Max speed of car
-    float maxSpeed = 6.0f; // 20
+    static float maxSpeed;
 
     // Called before the first frame update
     void Start()
     {
-        // Initialization of data
         speed = Random.Range(minSpeed, maxSpeed);
-    }
-
-    // Called once per frame
-    void Update()
-    {
-        
     }
 
     // Called every fixed frame-rate frame
     void FixedUpdate()
     {
         transform.position += transform.forward * Time.deltaTime * speed;
+    }
+
+    // Set speed on current level, called by Level Manager
+    public static void SetSpeed(float _minSpeed, float _maxSpeed)
+    {
+        minSpeed = _minSpeed;
+        maxSpeed = _maxSpeed;
+    }
+
+    // Set speed for cars existing since map start, called by Level Manager
+    public void SetSpeedForExisting()
+    {
+        speed = Random.Range(minSpeed, maxSpeed);
     }
 }

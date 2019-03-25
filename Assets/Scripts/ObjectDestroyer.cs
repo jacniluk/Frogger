@@ -2,20 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Destroy appropriate objects which are coming into it
 public class ObjectDestroyer : MonoBehaviour
 {
-    // Called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Called once per frame
-    void Update()
-    {
-        
-    }
-
     // Called when the Collider other enters the trigger
     void OnTriggerEnter(Collider other)
     {

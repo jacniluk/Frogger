@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+// Controller for player, update properties, movement, time, HUD
 public class PlayerController : MonoBehaviour
 {
     // Components
@@ -25,23 +26,30 @@ public class PlayerController : MonoBehaviour
     // Is movement enable
     bool isMovementEnable;
 
-    // Max time of Level 1
-    const float maxTimeLevel1 = 45.0f;
+    // Max time
+    float maxTime;
     // Current time
     float currentTime;
 
     // References
     // Player spawn
     public GameObject Spawn;
-    // HUD lives
-    public Text textLives;
-    // HUD current time
+    // HUD text level
+    public Text textLevel;
+    // HUD text bases
+    public Text textBases;
+    // HUD text current time
     public Text textCurrentTime;
-    // HUD score
+    // HUD slider current time
+    public Slider sliderCurrentTime;
+    // HUD text lives
+    public Text textLives;
+    // HUD text score
     public Text textScore;
     // Message for level completing or player dead
     public Text textMessage;
-    // Is player swimming
+
+    // Is player floating
     public bool isFloating;
     // Max left position of player
     public float maxLeftPosition = -8.9f;
@@ -58,7 +66,8 @@ public class PlayerController : MonoBehaviour
         lives = maxLives;
         score = 0;
         bases = 0;
-        currentTime = maxTimeLevel1;
+        textLevel.text = "Level " + SceneManager.GetActiveScene().buildIndex + "/" + (SceneManager.sceneCountInBuildSettings - 1);
+        textBases.text = "Bases: 0/3";
         textLives.text = "Lives: " + lives.ToString();
         textScore.text = "Score: 0";
         textMessage.enabled = false;
@@ -73,7 +82,16 @@ public class PlayerController : MonoBehaviour
         // Update current time
         currentTime -= Time.deltaTime;
         System.TimeSpan time = System.TimeSpan.FromSeconds(currentTime);
-        textCurrentTime.text = time.ToString("m':'ss");
+        if (currentTime > 0.0f)
+        {
+            textCurrentTime.text = time.ToString("m':'ss");
+            sliderCurrentTime.value = currentTime / maxTime;
+        }
+        if (currentTime <= 0.0f)
+        {
+            // Time is up
+            TimeUp();
+        }
 
         // Update position
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
@@ -91,6 +109,10 @@ public class PlayerController : MonoBehaviour
         else if ((Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) && !IsAtMapRightEdge())
         {
             move.x = 1.0f;
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GoToMainMenu();
         }
         if (isFloating && move != Vector3.zero)
         {
@@ -116,20 +138,23 @@ public class PlayerController : MonoBehaviour
             // Achieve the base
             bases++;
             score += System.Convert.ToInt32(currentTime);
+            textBases.text = "Bases: " + bases.ToString() + "/3";
             textScore.text = "Score: " + score.ToString();
             if (bases < maxBases)
             {
                 textMessage.text = "Base Achieved!";
+                // Respawn player
                 Invoke("Respawn", 2.0f);
             }
             else
             {
-                // 2do change level
                 textMessage.text = "Level Complete!\nYour Score: " + score.ToString();
+                Invoke("LevelUp", 2.0f);
             }
             isMovementEnable = false;
-            textMessage.color = new Color(22.0f / 255.0f, 124.0f / 255.0f, 241.0f / 255.0f);
+            textMessage.color = new Color(152.0f / 255.0f, 46.0f / 255.0f, 188.0f / 255.0f);
             textMessage.enabled = true;
+            // Disable text message
             Invoke("DisableTextMessage", 2.0f);
         }
         else if (other.gameObject.CompareTag("Car"))
@@ -154,12 +179,27 @@ public class PlayerController : MonoBehaviour
     void GoToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+        Cursor.visible = true;
     }
 
     // Disable message after some time
     void DisableTextMessage()
     {
         textMessage.enabled = false;
+    }
+
+    // Go to next level
+    void LevelUp()
+    {
+        int nextLevel = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextLevel < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextLevel);
+        }
+        else
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 
     // Determine if player stands at the left edge of map
@@ -180,21 +220,34 @@ public class PlayerController : MonoBehaviour
         return (transform.position.z < maxDownPosition) ? true : false;
     }
 
+    // Called when time is up
+    void TimeUp()
+    {
+        gameObject.SetActive(false);
+        textMessage.text = "Time is Up!\nGame Over!";
+        textMessage.color = new Color(207.0f / 255.0f, 17.0f / 255.0f, 17.0f / 255.0f);
+        textMessage.enabled = true;
+        // Disable text message
+        Invoke("DisableTextMessage", 2.0f);
+        // Go to Main Menu
+        Invoke("GoToMainMenu", 2.0f);
+    }
+
     // Player is dead
     public void Dead(string message)
     {
         gameObject.SetActive(false);
         lives--;
+        textLives.text = "Lives: " + lives.ToString();
         textMessage.text = message;
         if (lives == 0)
         {
             textMessage.text += "\nGame Over!";
         }
-        textLives.text = "Lives: " + lives.ToString();
         textMessage.color = new Color(207.0f / 255.0f, 17.0f / 255.0f, 17.0f / 255.0f);
         textMessage.enabled = true;
+        // Disable text message
         Invoke("DisableTextMessage", 2.0f);
-
         if (lives > 0)
         {
             // Respawn player
@@ -207,7 +260,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Move swimming player
+    // Move floating player
     public void MoveSwimming(Vector3 newPosition)
     {
         if (!IsAtMapLeftEdge() && !IsAtMapRightEdge())
@@ -218,5 +271,12 @@ public class PlayerController : MonoBehaviour
         {
             isFloating = false;
         }
+    }
+
+    // Set time on current level, called by Level Manager
+    public void SetMaxTime(float _maxTime)
+    {
+        maxTime = _maxTime;
+        currentTime = maxTime;
     }
 }

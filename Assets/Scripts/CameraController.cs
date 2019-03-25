@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Controller for camera, follow player
 public class CameraController : MonoBehaviour
 {
     // Offset camera to player
-    private Vector3 offset;
+    Vector3 offset;
+    // Smooth speed
+    float smooth = 6.0f;
+    // Max up position of camera
+    float maxUpPosition;
 
     // References
-    // Player the camera belongs to
+    // Player
     public GameObject player;
-
-    // Smooth speed
-    public float smooth = 6.0f;
-    // Max up position of camera
-    public float maxUpPosition = 4.0f;
 
     // Called before the first frame update
     void Start()
@@ -22,14 +22,8 @@ public class CameraController : MonoBehaviour
         offset = transform.position - player.transform.position;
     }
 
-    // Called once per frame
-    void Update()
-    {
-        
-    }
-
-    // Called after all Update functions have been called
-    void LateUpdate()
+    // Called every fixed frame-rate frame
+    void FixedUpdate()
     {
         // Move camera with smooth
         Vector3 destination = player.transform.position + offset;
@@ -39,5 +33,11 @@ public class CameraController : MonoBehaviour
             newZ = transform.position.z;
         }
         transform.position = new Vector3(transform.position.x, transform.position.y, newZ);
+    }
+
+    // Set max up position, called by Level Manager
+    public void SetMaxUpPosition(float _maxUpPosition)
+    {
+        maxUpPosition = _maxUpPosition;
     }
 }

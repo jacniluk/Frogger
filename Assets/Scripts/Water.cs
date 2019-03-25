@@ -2,23 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Destroy player who come into
 public class Water : MonoBehaviour
 {
     // References
     // Player
     GameObject player;
-
-    // Called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Called once per frame
-    void Update()
-    {
-        
-    }
 
     // Called when this collider/rigidbody has begun touching another rigidbody/collider
     void OnCollisionEnter(Collision collision)
