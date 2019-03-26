@@ -23,8 +23,8 @@ public class PlayerController : MonoBehaviour
     int bases;
     // Movement step
     Vector3 move;
-    // Is movement enable
-    bool isMovementEnable;
+    // Is base achieved
+    bool isBaseAchieved;
 
     // Max time
     float maxTime;
@@ -80,7 +80,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Update current time
-        currentTime -= Time.deltaTime;
+        if (!isBaseAchieved)
+        {
+            currentTime -= Time.deltaTime;
+        }
         System.TimeSpan time = System.TimeSpan.FromSeconds(currentTime);
         if (currentTime > 0.0f)
         {
@@ -123,7 +126,7 @@ public class PlayerController : MonoBehaviour
     // Called every fixed frame-rate frame
     void FixedUpdate()
     {
-        if (isMovementEnable)
+        if (!isBaseAchieved)
         {
             rb.MovePosition(transform.position + move);
         }
@@ -136,6 +139,7 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Target Base"))
         {
             // Achieve the base
+            transform.position = other.gameObject.transform.position;
             bases++;
             score += System.Convert.ToInt32(currentTime);
             textBases.text = "Bases: " + bases.ToString() + "/3";
@@ -151,7 +155,7 @@ public class PlayerController : MonoBehaviour
                 textMessage.text = "Level Complete!\nYour Score: " + score.ToString();
                 Invoke("LevelUp", 2.0f);
             }
-            isMovementEnable = false;
+            isBaseAchieved = true;
             textMessage.color = new Color(152.0f / 255.0f, 46.0f / 255.0f, 188.0f / 255.0f);
             textMessage.enabled = true;
             // Disable text message
@@ -170,7 +174,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Spawn.transform.rotation;
         transform.position = Spawn.transform.position;
         move = Vector3.zero;
-        isMovementEnable = true;
+        isBaseAchieved = false;
         isFloating = false;
         gameObject.SetActive(true);
     }
@@ -198,7 +202,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            SceneManager.LoadScene("MainMenu");
+            GoToMainMenu();
         }
     }
 
